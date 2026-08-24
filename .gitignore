@@ -1,0 +1,14 @@
+.DS_Store
+.tools/
+*.log
+distributedkv-java/build/
+distributedkv-java/.gradle/
+reports/
+.DS_Store
+
+# Reference/course artifacts not needed by the portfolio implementation
+go-extracted/Note.docx
+go-extracted/kv_doc/
+go-extracted/raft-course-main/
+go-extracted/raft-course-raft/
+go-extracted/raft-course-stash/

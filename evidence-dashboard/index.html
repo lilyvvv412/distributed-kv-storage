@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DistributedKV Evidence Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">DISTRIBUTED SYSTEMS / LOCAL EVIDENCE</p>
+        <h1>DistributedKV</h1>
+        <p class="subtitle">Java Multi-Raft storage + Go ShardedKV migration track</p>
+      </div>
+      <div class="hero-badge"><span class="dot"></span> Demo verified</div>
+    </header>
+
+    <section class="summary-grid" aria-label="Project summary">
+      <article class="metric-card accent-blue">
+        <span class="metric-label">Unified demo</span>
+        <strong>PASS</strong>
+        <span class="metric-detail">Java smoke + Go ShardKV</span>
+      </article>
+      <article class="metric-card accent-green">
+        <span class="metric-label">FollowerRead improvement</span>
+        <strong>58.5%</strong>
+        <span class="metric-detail">average latency, controlled RTT</span>
+      </article>
+      <article class="metric-card accent-purple">
+        <span class="metric-label">Leader failure</span>
+        <strong>PASS</strong>
+        <span class="metric-detail">re-election + continued R/W</span>
+      </article>
+      <article class="metric-card accent-orange">
+        <span class="metric-label">Shard migration</span>
+        <strong>PASS</strong>
+        <span class="metric-detail">Go JoinLeave + StaticShards</span>
+      </article>
+    </section>
+
+    <section class="panel architecture-panel">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">ARCHITECTURE</p>
+          <h2>One project, two implementation tracks</h2>
+        </div>
+        <span class="status-pill blue">Polyglot harness</span>
+      </div>
+      <div class="architecture-flow">
+        <div class="flow-node harness"><span>Unified Demo</span><small>reports / benchmarks</small></div>
+        <div class="flow-arrow">↓</div>
+        <div class="track-grid">
+          <div class="flow-node java-track">
+            <span>Java Multi-Raft</span>
+            <small>ReadIndex · FollowerRead · AsyncApply</small>
+            <small>RocksDB · B+Tree · HashTable · MVCC</small>
+          </div>
+          <div class="flow-node go-track">
+            <span>Go ShardedKV</span>
+            <small>Shard Controller · Join/Leave</small>
+            <small>Migration · partial-outage recovery</small>
+          </div>
+        </div>
+      </div>
+      <p class="note">The Java and Go implementations are unified by the evidence harness; they are not peers in one cross-language Raft group.</p>
+    </section>
+
+    <section class="two-column">
+      <article class="panel">
+        <div class="section-heading compact">
+          <div><p class="eyebrow">JAVA TRACK</p><h2>Resume-critical paths</h2></div>
+          <span class="status-pill green">Verified</span>
+        </div>
+        <ul class="check-list">
+          <li><span>✓</span> Multi-Raft / linearizable read path</li>
+          <li><span>✓</span> ReadIndex and FollowerRead</li>
+          <li><span>✓</span> Asynchronous state-machine apply</li>
+          <li><span>✓</span> RocksDB, B+ Tree, Hash Table</li>
+          <li><span>✓</span> MVCC version reads</li>
+          <li><span>✓</span> Consistent hashing and local migration</li>
+        </ul>
+      </article>
+      <article class="panel">
+        <div class="section-heading compact">
+          <div><p class="eyebrow">GO TRACK</p><h2>Reconfiguration paths</h2></div>
+          <span class="status-pill green">Verified</span>
+        </div>
+        <ul class="check-list">
+          <li><span>✓</span> Raft replication and KV service</li>
+          <li><span>✓</span> Shard Controller and ShardKV</li>
+          <li><span>✓</span> Join / Leave reconfiguration</li>
+          <li><span>✓</span> Shard transfer and migration</li>
+          <li><span>✓</span> Partial group outage handling</li>
+          <li><span>✓</span> Leader kill and automatic re-election</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="panel benchmark-panel">
+      <div class="section-heading">
+        <div><p class="eyebrow">MEASURED EVIDENCE</p><h2>FollowerRead latency</h2></div>
+        <span class="status-pill green">2,000 ops / concurrency 8</span>
+      </div>
+      <div class="latency-grid">
+        <div class="latency-item">
+          <div class="latency-top"><span>Leader ReadIndex</span><strong>6.184 ms</strong></div>
+          <div class="bar"><i class="leader-bar"></i></div>
+          <small>P50 6.318 ms · P95 6.461 ms</small>
+        </div>
+        <div class="latency-item">
+          <div class="latency-top"><span>FollowerRead</span><strong>2.563 ms</strong></div>
+          <div class="bar"><i class="follower-bar"></i></div>
+          <small>P50 2.581 ms · P95 2.716 ms</small>
+        </div>
+      </div>
+      <div class="result-callout"><strong>58.5%</strong><span>lower average latency in the controlled path benchmark</span></div>
+      <p class="note">Method: real ReadIndex/FollowerRead code paths with injected heartbeat and safety-check delays. This is benchmark evidence, not a production-cluster SLO.</p>
+    </section>
+
+    <section class="evidence-grid">
+      <article class="evidence-card pass-card">
+        <div class="card-icon">↻</div>
+        <div><p class="eyebrow">FAILURE RECOVERY</p><h3>Leader re-election</h3><p>3-node group: write → kill leader → elect server 0 → old value readable → new write/read succeeds.</p><a href="../reports/leader-failure-demo-latest.md">Open failure report ↗</a></div>
+      </article>
+      <article class="evidence-card pass-card">
+        <div class="card-icon">⇄</div>
+        <div><p class="eyebrow">SHARDING</p><h3>Reconfiguration + migration</h3><p>Go TestJoinLeave transfers shards and shuts down the source group while data remains readable.</p><a href="../reports/go-shardkv-demo-20260808-182423.md">Open ShardKV report ↗</a></div>
+      </article>
+      <article class="evidence-card report-card">
+        <div class="card-icon">▤</div>
+        <div><p class="eyebrow">UNIFIED REPORT</p><h3>Cross-track smoke run</h3><p>Java resume-critical tests and focused Go ShardKV tests both passed.</p><a href="../reports/distributedkv-unified-20260808-182422.md">Open unified report ↗</a></div>
+      </article>
+    </section>
+
+    <section class="panel next-panel">
+      <div class="section-heading compact"><div><p class="eyebrow">PROJECT STATUS</p><h2>Ready for the next project</h2></div><span class="status-pill green">Move on</span></div>
+      <div class="next-grid">
+        <div><strong>Done for the demo</strong><p>Core architecture, Java/Go tracks, migration, failure recovery, benchmark evidence, and documentation.</p></div>
+        <div><strong>Still optional</strong><p>Full Java benchmark CLI, the educational TestCountPartB RPC-budget issue, and AWS deployment.</p></div>
+      </div>
+      <div class="links"><a href="../README.md">README</a><a href="../PROGRESS.md">Progress board</a><a href="../docs/ARCHITECTURE.md">Design → evidence</a></div>
+    </section>
+
+    <footer><span>DistributedKV · local evidence dashboard</span><span>Last verified: 2026-08-08</span></footer>
+  </main>
+</body>
+</html>
